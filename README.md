@@ -1,6 +1,6 @@
-# Jenkins Flowdock Plugin
+# Flowdock Plugin for Jenkins
 
-Jenkins Flowdock Plugin is a tool for sending build notification from Jenkins to your flow. It hooks to Post-build Actions of the build,
+Flowdock Plugin is a tool for sending build notification from Jenkins to your flow. It hooks to Post-build Actions of the build,
 so you can use with any number of different builds. All you need to configure is the API token of the flow where you want the notifications
 to go. See [Tokens](https://www.flowdock.com/account/tokens) page for list of your API tokens.
 
@@ -53,9 +53,9 @@ ERROR: Publisher com.flowdock.jenkins.FlowdockNotifier aborted due to exception
 Finished: FAILURE
 ```
 
-The way of storing the plugin configuration has changed in the recent versions. However, after 
-upgrading both Jenkins and Flowdock plugin, the old configuration data may remain and cause exceptions 
-like this. The quickest way to resolve this is to re-install the Flowdock plugin, which should flush the 
+The way of storing the plugin configuration has changed in the recent versions. However, after
+upgrading both Jenkins and Flowdock plugin, the old configuration data may remain and cause exceptions
+like this. The quickest way to resolve this is to re-install the Flowdock plugin, which should flush the
 cached configuration.
 
 
