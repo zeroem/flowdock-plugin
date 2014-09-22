@@ -2,3 +2,8 @@ target
 /jenkins-flowdock-plugin.iml
 /jenkins-flowdock-plugin.ipr
 /jenkins-flowdock-plugin.iws
+work/
+.classpath
+.project
+.settings/
+

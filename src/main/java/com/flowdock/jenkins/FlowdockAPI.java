@@ -1,18 +1,32 @@
 package com.flowdock.jenkins;
 
-import com.flowdock.jenkins.exception.FlowdockException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.InputStreamReader;
-import java.io.DataOutputStream;
+import hudson.ProxyConfiguration;
+
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ProtocolException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.ProtocolException;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.SocketAddress;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import jenkins.model.Jenkins;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.flowdock.jenkins.exception.FlowdockException;
 
 public class FlowdockAPI {
+	private static final Logger LOGGER = Logger.getLogger(FlowdockAPI.class.getName());
     private String apiUrl;
     private String flowToken;
 
@@ -44,7 +58,7 @@ public class FlowdockAPI {
         try {
             // create connection
             url = new URL(flowdockUrl);
-            connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection)url.openConnection(getProxy());
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Content-Length", String.valueOf(data.getBytes().length));
@@ -82,6 +96,44 @@ public class FlowdockAPI {
         } catch(IOException ex) {
             throw new FlowdockException("IOException in connecting to Flowdock: " + ex.getMessage());
         }
+    }
+
+    /**
+     * Returns the Jenkins proxy configuration. {@link Proxy#NO_PROXY} if none configured.
+     * 
+     * @return the Jenkins proxy configuration. {@link Proxy#NO_PROXY} if none configured.
+     */
+    private Proxy getProxy() {
+        Proxy proxy = null;
+        final ProxyConfiguration proxyConf = Jenkins.getInstance().proxy;
+
+        if (proxyConf == null) {
+            proxy = Proxy.NO_PROXY;
+            LOGGER.finest("No proxy found");
+        } else {
+            LOGGER.finest("Proxy found: " + proxyConf.name + ":" + proxyConf.port);
+            System.out.println();
+            SocketAddress socketAddress = new InetSocketAddress(proxyConf.name, proxyConf.port);
+            proxy = new Proxy(Type.HTTP, socketAddress);
+
+            // Considering only the presence of a username, implying there's a pwd. Is it right?
+            final String userName = proxyConf.getUserName();
+            if (StringUtils.isNotEmpty(userName)) {
+                final String passwd = proxyConf.getPassword();
+
+                LOGGER.finest("Proxy authentication found: username=" + userName
+                        + ", password empty? " + StringUtils.isEmpty(passwd));
+
+                // Will impact the whole server instance. May not be a good idea :-/.
+                Authenticator.setDefault(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(userName, passwd.toCharArray());
+                    }
+                });
+            }
+        }
+        return proxy;
     }
 
     public static String trimFlowTokens(String flowTokens) {
