@@ -71,9 +71,19 @@ public class TeamInboxMessage extends FlowdockMessage {
 
     public static TeamInboxMessage fromBuild(AbstractBuild build, BuildResult buildResult) {
         TeamInboxMessage msg = new TeamInboxMessage();
-        msg.setProject(build.getProject().getName().replaceAll("[^a-zA-Z0-9\\-_ ]", ""));
+
+        String projectName = "";
+        String configuration = "";
+        if(build.getProject().getRootProject() != build.getProject()) {
+            projectName = build.getProject().getRootProject().getName();
+            configuration = " on " + build.getProject().getName();
+        } else {
+            projectName = build.getProject().getName();
+        }
+
+        msg.setProject(projectName.replaceAll("[^a-zA-Z0-9\\-_ ]", ""));
         String buildNo = build.getDisplayName().replaceAll("#", "");
-        msg.setSubject(build.getProject().getName() + " build " + buildNo + " " + buildResult.getHumanResult());
+        msg.setSubject(projectName + " build " + buildNo + configuration + " " + buildResult.getHumanResult());
 
         String rootUrl = Hudson.getInstance().getRootUrl();
         String buildLink = (rootUrl == null) ? null : rootUrl + build.getUrl();
@@ -83,7 +93,7 @@ public class TeamInboxMessage extends FlowdockMessage {
             msg.setFromAddress(FLOWDOCK_BUILD_FAIL_EMAIL);
 
         StringBuffer content = new StringBuffer();
-        content.append("<h2>").append(build.getProject().getName()).append("</h2>");
+        content.append("<h3>").append(projectName).append("</h3>");
         content.append("Build: ").append(build.getDisplayName()).append("<br />");
         content.append("Result: ").append(buildResult.toString()).append("<br />");
         if(buildLink != null)
