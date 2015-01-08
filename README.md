@@ -35,29 +35,12 @@ To compile this plugin from source, you need to have at Maven 3.0.4 or newer ins
  * Save the changes and click "Build Now"
  * Your flow should now receive notification. If not, see the Console Output of the build for errors.
 
-## Troubleshooting by Console Output
+## Troubleshooting 
 
-```
-ERROR: Publisher com.flowdock.jenkins.FlowdockNotifier aborted due to exception
- java.lang.NullPointerException
- at com.flowdock.jenkins.FlowdockNotifier.shouldNotify(FlowdockNotifier.java:117)
- at com.flowdock.jenkins.FlowdockNotifier.perform(FlowdockNotifier.java:108)
- at hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:19)
- at hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:717)
- at hudson.model.AbstractBuild$AbstractBuildExecution.performAllBuildSteps(AbstractBuild.java:692)
- at hudson.model.Build$BuildExecution.cleanUp(Build.java:192)
- at hudson.model.Run.execute(Run.java:1546)
- at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:46)
- at hudson.model.ResourceController.execute(ResourceController.java:88)
- at hudson.model.Executor.run(Executor.java:236)
-Finished: FAILURE
-```
-
-The way of storing the plugin configuration has changed in the recent versions. However, after
-upgrading both Jenkins and Flowdock plugin, the old configuration data may remain and cause exceptions
-like this. The quickest way to resolve this is to re-install the Flowdock plugin, which should flush the
+If Flowdock plugin stops working after upgrading, the likely cause is old configuration data that may remain and cause exceptions. The quickest way to resolve this is to re-install the Flowdock plugin, which should flush the
 cached configuration.
 
+### Common errors in console output
 
 ```
 Flowdock: failed to send notification
