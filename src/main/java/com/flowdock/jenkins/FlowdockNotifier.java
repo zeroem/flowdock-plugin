@@ -123,14 +123,14 @@ public class FlowdockNotifier extends Notifier {
         PrintStream logger = listener.getLogger();
         try {
             FlowdockAPI api = new FlowdockAPI(getDescriptor().apiUrl(), flowToken);
-            TeamInboxMessage msg = TeamInboxMessage.fromBuild(build, buildResult);
+            TeamInboxMessage msg = TeamInboxMessage.fromBuild(build, buildResult, listener);
             EnvVars vars = build.getEnvironment(listener);
             msg.setTags(vars.expand(notificationTags));
             api.pushTeamInboxMessage(msg);
             listener.getLogger().println("Flowdock: Team Inbox notification sent successfully");
 
             if(build.getResult() != Result.SUCCESS && chatNotification) {
-                ChatMessage chatMsg = ChatMessage.fromBuild(build, buildResult);
+                ChatMessage chatMsg = ChatMessage.fromBuild(build, buildResult, listener);
                 chatMsg.setTags(vars.expand(notificationTags));
                 api.pushChatMessage(chatMsg);
                 logger.println("Flowdock: Chat notification sent successfully");

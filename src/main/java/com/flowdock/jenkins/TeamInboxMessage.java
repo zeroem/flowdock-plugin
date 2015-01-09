@@ -2,7 +2,10 @@ package com.flowdock.jenkins;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.IOException;
 import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.EnvVars;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.scm.ChangeLogSet;
@@ -69,7 +72,7 @@ public class TeamInboxMessage extends FlowdockMessage {
         return postData.toString();
     }
 
-    public static TeamInboxMessage fromBuild(AbstractBuild build, BuildResult buildResult) {
+    public static TeamInboxMessage fromBuild(AbstractBuild build, BuildResult buildResult, BuildListener listener) throws IOException, InterruptedException {
         TeamInboxMessage msg = new TeamInboxMessage();
 
         String projectName = "";
@@ -98,6 +101,14 @@ public class TeamInboxMessage extends FlowdockMessage {
         content.append("Result: ").append(buildResult.toString()).append("<br />");
         if(buildLink != null)
             content.append("URL: <a href=\"").append(buildLink).append("\">").append(buildLink).append("</a>").append("<br />");
+
+        EnvVars envVars = build.getEnvironment(listener);
+        String vcsInfo = versionControlVariableList(envVars);
+        if(vcsInfo.length() > 0) {
+            content.append("<br /><strong>Version control:</strong><br />");
+            content.append(vcsInfo);
+            content.append("<br/>");
+        }
 
         List<Entry> commits = parseCommits(build);
         if(commits != null) {
@@ -146,5 +157,24 @@ public class TeamInboxMessage extends FlowdockMessage {
     private static String commitId(Entry commit, int length) {
       String id = commitId(commit);
       return id.substring(0, Math.min(length, id.length()));
+    }
+
+    private static String versionControlVariableList(EnvVars envVars) {
+        StringBuffer envList = new StringBuffer();
+
+        if(envVars.get("GIT_BRANCH") != null) {
+            envList.append("Git branch: ").append(envVars.get("GIT_BRANCH")).append("<br/>");
+        }
+        if(envVars.get("GIT_URL") != null) {
+            envList.append("Git URL: ").append(envVars.get("GIT_URL")).append("<br/>");
+        }
+        if(envVars.get("SVN_REVISION") != null) {
+            envList.append("SVN revision: ").append(envVars.get("SVN_REVISION")).append("<br/>");
+        }
+        if(envVars.get("SVN_URL") != null) {
+            envList.append("SVN URL: ").append(envVars.get("SVN_URL")).append("<br/>");
+        }
+
+        return envList.toString();
     }
 }
