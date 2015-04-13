@@ -11,6 +11,7 @@ import hudson.model.Result;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import java.io.UnsupportedEncodingException;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 public class TeamInboxMessage extends FlowdockMessage {
 
@@ -121,7 +122,7 @@ public class TeamInboxMessage extends FlowdockMessage {
                 content.append("<span title=\"" + commitId(commit) + "\" class=\"commit-sha\">").
                     append(commitId(commit, 7)).
                 append("</span> &nbsp;");
-                content.append("<span class=\"commit-message\">").append(commit.getMsg()).append("</span>");
+                content.append("<span class=\"commit-message\">").append(escapeHtml(commit.getMsg())).append("</span>");
                 content.append("</span></li>");
             }
             content.append("</ul></div>");
