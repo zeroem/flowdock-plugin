@@ -20,7 +20,7 @@ public class ChatMessage extends FlowdockMessage {
         StringBuffer postData = new StringBuffer();
         postData.append("content=").append(urlEncode(content));
         postData.append("&external_user_name=").append(urlEncode(externalUserName));
-        postData.append("&tags=").append(urlEncode(tags));
+        postData.append("&tags=").append(urlEncode(removeWhitespace(tags)));
         return postData.toString();
     }
 

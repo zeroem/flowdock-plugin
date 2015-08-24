@@ -69,7 +69,7 @@ public class TeamInboxMessage extends FlowdockMessage {
         postData.append("&source=").append(urlEncode(source));
         postData.append("&project=").append(urlEncode(project));
         postData.append("&link=").append(urlEncode(link));
-        postData.append("&tags=").append(urlEncode(tags));
+        postData.append("&tags=").append(urlEncode(removeWhitespace(tags)));
         return postData.toString();
     }
 

@@ -17,6 +17,10 @@ public abstract class FlowdockMessage {
 
     public abstract String asPostData() throws UnsupportedEncodingException;
 
+    protected String removeWhitespace(String data) {
+        return data == null ? null : tags.replaceAll("\\s", "");
+    }
+
     protected String urlEncode(String data) throws UnsupportedEncodingException {
         return data == null ? "" : URLEncoder.encode(data, "UTF-8");
     }
