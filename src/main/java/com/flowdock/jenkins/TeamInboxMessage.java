@@ -61,7 +61,7 @@ public class TeamInboxMessage extends FlowdockMessage {
     }
 
     public String asPostData() throws UnsupportedEncodingException {
-        StringBuffer postData = new StringBuffer();
+        StringBuilder postData = new StringBuilder();
         postData.append("subject=").append(urlEncode(subject));
         postData.append("&content=").append(urlEncode(content));
         postData.append("&from_address=").append(urlEncode(fromAddress));
@@ -79,10 +79,10 @@ public class TeamInboxMessage extends FlowdockMessage {
         String projectName = "";
         String configuration = "";
         if(build.getProject().getRootProject() != build.getProject()) {
-            projectName = build.getProject().getRootProject().getName();
-            configuration = " on " + build.getProject().getName();
+            projectName = build.getProject().getRootProject().getDisplayName();
+            configuration = " on " + build.getProject().getDisplayName();
         } else {
-            projectName = build.getProject().getName();
+            projectName = build.getProject().getDisplayName();
         }
 
         msg.setProject(projectName.replaceAll("[^a-zA-Z0-9\\-_ ]", ""));
@@ -96,12 +96,12 @@ public class TeamInboxMessage extends FlowdockMessage {
         if(build.getResult().isWorseThan(Result.SUCCESS))
             msg.setFromAddress(FLOWDOCK_BUILD_FAIL_EMAIL);
 
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         content.append("<h3>").append(projectName).append("</h3>");
         content.append("Build: ").append(build.getDisplayName()).append("<br />");
-        content.append("Result: ").append(buildResult.toString()).append("<br />");
+        content.append("Result: <strong>").append(buildResult.toString()).append("</strong><br />");
         if(buildLink != null)
-            content.append("URL: <a href=\"").append(buildLink).append("\">").append(buildLink).append("</a>").append("<br />");
+            content.append("URL: <a href=\"").append(buildLink).append("\">").append(build.getFullDisplayName()).append("</a>").append("<br />");
 
         EnvVars envVars = build.getEnvironment(listener);
         String vcsInfo = versionControlVariableList(envVars);
@@ -161,7 +161,7 @@ public class TeamInboxMessage extends FlowdockMessage {
     }
 
     private static String versionControlVariableList(EnvVars envVars) {
-        StringBuffer envList = new StringBuffer();
+        StringBuilder envList = new StringBuilder();
 
         if(envVars.get("GIT_BRANCH") != null) {
             envList.append("Git branch: ").append(envVars.get("GIT_BRANCH")).append("<br/>");
