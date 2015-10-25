@@ -10,7 +10,7 @@
   <name>Flowdock plugin</name>
   <description>Posts build notifications to your flow</description>
   <artifactId>jenkins-flowdock-plugin</artifactId>
-  <version>1.1.8-SNAPSHOT</version>
+  <version>1.1.8</version>
   <packaging>hpi</packaging>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Flowdock+Plugin</url>
 
@@ -31,7 +31,7 @@
     <connection>scm:git:git@github.com:jenkinsci/flowdock-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/flowdock-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/flowdock-plugin</url>
-    <tag>HEAD</tag>
+    <tag>jenkins-flowdock-plugin-1.1.8</tag>
   </scm>
 
   <distributionManagement>
