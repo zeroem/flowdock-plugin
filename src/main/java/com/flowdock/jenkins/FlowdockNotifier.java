@@ -17,6 +17,8 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import org.jenkinsci.plugins.tokenmacro.MacroEvaluationException;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -122,7 +124,8 @@ public class FlowdockNotifier extends Notifier {
     protected void notifyFlowdock(AbstractBuild build, BuildResult buildResult, BuildListener listener) {
         PrintStream logger = listener.getLogger();
         try {
-            FlowdockAPI api = new FlowdockAPI(getDescriptor().apiUrl(), flowToken);
+            String parsedFlowToken = TokenMacro.expandAll(build, listener, flowToken);
+            FlowdockAPI api = new FlowdockAPI(getDescriptor().apiUrl(), parsedFlowToken);
             TeamInboxMessage msg = TeamInboxMessage.fromBuild(build, buildResult, listener);
             EnvVars vars = build.getEnvironment(listener);
             msg.setTags(vars.expand(notificationTags));
@@ -150,6 +153,10 @@ public class FlowdockNotifier extends Notifier {
         catch(FlowdockException ex) {
             logger.println("Flowdock: failed to send notification");
             logger.println("Flowdock: " + ex.getMessage());
+        }
+
+        catch(MacroEvaluationException ex) {
+            logger.println("Error evaluating token: " + ex.getMessage());
         }
 
 
